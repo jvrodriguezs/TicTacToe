@@ -1,0 +1,35 @@
+@startuml ticTacToe
+class Game {
+  
+}
+
+class Board {
+  - grid: Cell[3][3]
+  + displayBoard()
+  + isCellEmpty(row, col)
+  + updateCell(row, col, player)
+}
+
+class Player {
+  - name: String
+  - symbol: Char
+  + makeMove(row, col)
+}
+
+class Cell {
+  - row: int
+  - col: int
+  - symbol: Char
+}
+
+class Move {
+  - player: Player
+  - row: int
+  - col: int
+}
+
+Game --> Board
+Game --> Player
+Board --> "3x3" Cell
+Player --> Move
+@enduml

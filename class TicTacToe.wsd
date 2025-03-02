@@ -1,0 +1,40 @@
+class TicTacToe
+class Turn 
+class Player
+class Board
+class Goal 
+class InvertedDiagonal 
+class Raw 
+class Column 
+class mainDiagonal
+class Piece 
+abstract class Color
+class X
+class Y 
+class Square
+class Coordinate
+
+TicTacToe *-down-> Turn
+TicTacToe *-down-> "2" Player
+Turn -right->  "2" Player
+TicTacToe *-down-> Board
+
+Player *-down-> Goal
+Player *-down-> Piece
+Player *-down-> Color
+Player -right-> Board
+
+Piece *-down-> Color
+
+Color -down-> X
+Color -down-> Y
+
+Goal <|-down- InvertedDiagonal 
+Goal <|-down-Raw 
+Goal <|-down-Column 
+Goal <|-down-mainDiagonal
+
+Board *-down-> "3x3 " Square 
+Square *-down->Coordinate 
+
+Square o-down-> "0..1" Piece 

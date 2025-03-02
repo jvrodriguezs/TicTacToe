@@ -1,0 +1,1224 @@
+SELECT TO_CHAR(s.npoliza) "POLIZA", TO_CHAR(s.ncertif) "CERTIF", TO_CHAR(s.nsuplem) "SUPLEMENTO", 
+                                                                                                          pac_isqlfor_agm.f_fefecto(m.fefecto, m.femisio) "FEFECTO", 
+       TO_CHAR(s.fcaranu, 'dd/mm/yyyy hh24:mi') "FVENCIM", pac_isqlfor.f_formapago(s.sseguro, 2 ) "CFORPAG", 
+       pac_isqlfor.ff_nombre(tom0.sperson, 1, ff_agente_cpervisio(s.cagente)) "TNOMTOM",  
+       pac_isqlfor.f_dades_persona(tom0.sperson, 1, 2 , 'POL') "NNIFTOM", 
+       pac_isqlfor.f_domicilio(tom0.sperson, tom0.cdomici) "TDOMTOM",  
+       pac_isqlfor.f_poblacion(tom0.sperson, tom0.cdomici) "TPOBTOM", 
+       pac_isqlfor.f_provincia(tom0.sperson, tom0.cdomici) "TPROVTOM",  
+       pac_isqlfor.f_codpostal(tom0.sperson, tom0.cdomici) "CPTOM", 
+       nvl((SELECT pct.tvalcon 
+          FROM per_contactos pct 
+         WHERE pct.sperson = tom0.sperson 
+           AND pct.cagente = ff_agente_cpervisio(s.cagente) 
+           AND pct.ctipcon = 1 
+           AND ROWNUM = 1),'No informado') "TLFTOM1", 
+       nvl((SELECT pct.tvalcon 
+          FROM per_contactos pct 
+         WHERE pct.sperson = tom0.sperson 
+           AND pct.cagente = ff_agente_cpervisio(s.cagente) 
+           AND pct.ctipcon = 6 
+           AND ROWNUM = 1),'No informado') "TLFTOM2", 
+       nvl((SELECT pct.tvalcon 
+          FROM per_contactos pct 
+         WHERE pct.sperson = tom0.sperson 
+           AND pct.cagente = ff_agente_cpervisio(s.cagente) 
+           AND pct.ctipcon = 2 
+           AND ROWNUM = 1),'No informado') "FAXTOM", 
+       nvl((SELECT pct.tvalcon 
+          FROM per_contactos pct 
+         WHERE pct.sperson = tom0.sperson 
+           AND pct.cagente = ff_agente_cpervisio(s.cagente) 
+           AND pct.ctipcon = 3 
+           AND ROWNUM = 1),'No informado') "EMAILTOM",  
+       pac_isqlfor.ff_nombre(a.sperson, 1, ff_agente_cpervisio(s.cagente)) "TNOMASE", p.nnumide "NNIFASE", 
+       pac_isqlfor.f_domicilio(p.sperson, pd.cdomici) "TDOMASE", pac_isqlfor.f_poblacion(p.sperson, pd.cdomici) "TPOBASE", 
+       pac_isqlfor.f_provincia(p.sperson, pd.cdomici) "TPROVASE", pd.cpostal "CPASE", 
+       nvl((SELECT pc.tvalcon 
+          FROM per_contactos pc 
+         WHERE pc.sperson = a.sperson 
+           AND pc.cagente = ff_agente_cpervisio(s.cagente) 
+           AND pc.ctipcon = 1 
+           AND ROWNUM = 1),'No informado') "TLFASE1", 
+       nvl((SELECT pc.tvalcon 
+          FROM per_contactos pc 
+         WHERE pc.sperson = a.sperson 
+           AND pc.cagente = ff_agente_cpervisio(s.cagente) 
+           AND pc.ctipcon = 6 
+           AND ROWNUM = 1),'No informado') "TLFASE2", 
+       nvl((SELECT pct.tvalcon 
+          FROM per_contactos pct 
+         WHERE pct.sperson = a.sperson 
+           AND pct.cagente = ff_agente_cpervisio(s.cagente) 
+           AND pct.ctipcon = 2 
+           AND ROWNUM = 1),'No informado') "FAXASE", 
+       nvl((SELECT pc.tvalcon 
+          FROM per_contactos pc 
+         WHERE pc.sperson = a.sperson 
+           AND pc.cagente = ff_agente_cpervisio(s.cagente) 
+           AND pc.ctipcon = 3 
+           AND ROWNUM = 1),'No informado') "EMAILASE", pac_isqlfor.f_get_mediador(s.cempres, s.cagente, 2,  2 ) "TIPMEDIADOR", 
+       pac_isqlfor.f_get_mediador(s.cempres, s.cagente, 7, 2 ) || ' - ' 
+       || pac_isqlfor.f_get_mediador(s.cempres, s.cagente, 1,  2 ) "MEDIADOR", 
+       pac_isqlfor.f_get_mediador(s.cempres, s.cagente, 3,  2 ) "TDIRMEDIADOR", 
+       pac_isqlfor.f_get_mediador(s.cempres, s.cagente, 5, 2 ) "EMAILMEDIADOR", 
+       REPLACE(ff_desagente(s.cagente), CHR(39), CHR(39) || CHR(39)) "TAGENTE", 
+       pac_isqlfor.f_get_mediador(s.cempres, s.cagente, 4,  2 ) "TDIRAGENTE", 
+       pac_isqlfor.f_get_mediador(s.cempres, s.cagente, 6, 2 ) "TLFAGENTE", pac_isqlfor.f_ccc( &pmt_sseguro , 1) "CCC", 
+       'Pago Recurrente' "TIPO_PAGO", pac_isqlfor.f_get_param_clau(s.sseguro, mc.nmovimi, 0, 66, 1) "CCLAU_ENTIDAD", 
+       pac_isqlfor.f_get_param_clau(s.sseguro, mc.nmovimi, 0, 66, 2) "CCLAU_PRESTAMO", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1747,  2 ) "CPREGUN_1747", NULL, 
+       (SELECT REPLACE(tdomici, CHR(39), CHR(39) || CHR(39)) 
+          FROM sitriesgo 
+         WHERE sseguro = s.sseguro) "TDOMRIESGO", 
+       (SELECT REPLACE(p.tpoblac, CHR(39), CHR(39) || CHR(39)) 
+          FROM sitriesgo st, poblaciones p 
+         WHERE st.cprovin = p.cprovin 
+           AND st.cpoblac = p.cpoblac 
+           AND st.sseguro = s.sseguro) "TPOBRIESGO", (SELECT REPLACE(p.tprovin, CHR(39), CHR(39) || CHR(39)) 
+                                                        FROM sitriesgo st, provincias p 
+                                                       WHERE st.cprovin = p.cprovin 
+                                                         AND st.sseguro = s.sseguro) "TPROVRIESGO", (SELECT cpostal 
+                                                                                                       FROM sitriesgo 
+                                                                                                      WHERE sseguro = s.sseguro) "CPRIESGO", 
+       pac_isqlfor.f_resp_rie(s.sseguro, 1714, 1, mp2.nmovimi,  2 , 'POL') "CPREGUN_1714", NULL, 
+       pac_isqlfor.f_resp_rie(s.sseguro, 1716, 1, mp2.nmovimi,  2 , 'POL') "CPREGUN_1716", 
+       pac_isqlfor.f_resp_rie(s.sseguro, 1780, 1, mp2.nmovimi,  2 , 'POL') "CPREGUN_1780", 
+       pac_isqlfor.f_resp_rie(s.sseguro, 1790, 1, mp2.nmovimi,  2 , 'POL') "CPREGUN_1790", 
+       CASE 
+          WHEN pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1618,  2 ) = 'Si' THEN 'A ' 
+                                                                                                      || LOWER 
+                                                                                                           ('menos de 500 m de lugar habitado o permanentemente vigilada') 
+          ELSE 'A ' || LOWER('m?!s de 500 m de lugar habitado o permanentemente vigilada') 
+       END "CPREGUN_1618", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1724, 1) "CPREGUN_1724", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1101, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1101, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1101", 
+       pac_isqlfor.f_get_desglose_garant(s.sseguro, NULL, 1101, mg.nmovimi) "DLGARANT_1101", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1725,  2 ) "CPREGUN_1725", 
+       pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1610, 1101,  2) "CPREGUN_1610", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1727,  2 ) "CPREGUN_1727", 
+       pac_isqlfor.f_get_respuestas_pol(s.sseguro, mp1.nmovimi, 1728, 1759, 1760, 1761, 1762,  2 , 1) "CPREGUN_ROBO", 
+       pac_isqlfor.f_get_respuestas_pol(s.sseguro, mp1.nmovimi, 1763, 1764, 1765, 1766, 1767,  2 , 1) "CPREGUN_INCENDIO", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1729,  2) || ',' 
+       || pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1730,  2 , 1) "CPREGUN_BALSAS", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1729,  2 ) "CPREGUN_1729", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1730, 2 ) 
+       || LOWER(' existen balsas de riego a menos de 100 m de n??cleos de poblaci??n u otras instalaciones') "CPREGUN_1730", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1731,  2 ) "CPREGUN_1731", 
+       pac_isqlfor.f_get_desglose_garant(s.sseguro, NULL, 1082, mg.nmovimi) "DLGARANT_1082", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1102, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1102, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1102", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1103, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1103, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1103", 
+       pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1611, 1103,  2 ) "CPREGUN_1611", 
+       TO_CHAR(TO_NUMBER(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1612, 1103,  2 ), '0')) 
+               + TO_NUMBER(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1613, 1103,  2 ), '0')) 
+               + TO_NUMBER(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1614, 1103, 2 ), '0')) 
+               + TO_NUMBER(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1615, 1103,  2 ), '0')), 
+               'FM999G999G999G990D00') "SMERCESPEC", 
+       pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1612, 1103,  2 ) "CPREGUN_1612", 
+       pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1613, 1103,  2 ) "CPREGUN_1613", 
+       pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1614, 1103,  2 ) "CPREGUN_1614", 
+       pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1615, 1103,  2 ) "CPREGUN_1615", 
+       TO_CHAR(TO_NUMBER(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1644, 1103,  2 )), 
+               'FM999G999G999G990D00') "CPREGUN_1644", 
+       TO_CHAR(TO_NUMBER(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1644, 1051,  2 )), 
+               'FM999G999G999G990D00') "CPREGUN_1051_1644", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1104, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1019, 1, mg.nmovimi, 'POL') = 1 THEN TO_CHAR 
+                                                                                                                 (TO_NUMBER 
+                                                                                                                     (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1104, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                      'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1019, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00'), 
+                                                                                                                  'FM999G999G999G990D00') 
+          ELSE 'No incluida' 
+       END "SVALPAJFOR", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1104, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1104, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1104", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1019, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1019, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1019", 
+       CASE 
+          WHEN UPPER(pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1733,  2 )) = 'NO' THEN NULL 
+          ELSE 'S' || LOWER('?- existen almiares situados a menos de 50 m ,de carretera,camino p??blico o ferrocarril') 
+       END "CPREGUN_1733", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1735,  2 ) "CPREGUN_1735", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1105, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1105, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1105", 
+       pac_isqlfor.f_resp_rie(s.sseguro, 7517, 1, mp2.nmovimi,  2 , 'POL') "CPREGUN_7517", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1754,  2 ) "CPREGUN_1754", 
+       NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1636, 1095,  2 ), '0') "CPREGUN_1636", 
+       NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1637, 1095, 2 ), 0) "CPREGUN_1637", 
+       NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1638, 1095,  2 ), '0') "CPREGUN_1638", 
+       NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1639, 1095,  2 ), '0') "CPREGUN_1639", 
+       NVL(TO_CHAR(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1640, 1096,  2 ), 
+                   'FM999G999G999G990D00'), 
+           'No Incluida') "CPREGUN_1640", 
+       NVL(TO_CHAR(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1641, 1096,  2 ), 
+                   'FM999G999G999G990D00'), 
+           'No Incluida') "CPREGUN_1641", 
+       NVL(TO_CHAR(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1642, 1096,  2 ), 
+                   'FM999G999G999G990D00'), 
+           'No Incluida') "CPREGUN_1642", 
+       NVL(TO_CHAR(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1643, 1096,  2), 
+                   'FM999G999G999G990D00'), 
+           'No Incluida') "CPREGUN_1643", 
+       NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1636, 1095, 2 ) 
+           + pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1637, 1095,  2 ) 
+           + pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1638, 1095,  pmt_idioma ), 
+           '0') "SUMA_CPREGUN_NUM", 
+       NVL(TO_CHAR(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1640, 1096,  2 ) 
+                   + pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1641, 1096,  2 ) 
+                   + pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1642, 1096,  2 ) 
+                   + pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1643, 1096,  2 ), 
+                   'FM999G999G999G990D00'), 
+           'No incuida') "SUMA_CPREGUN_VAL", 
+       TO_CHAR(TO_NUMBER(pac_isqlfor.f_cap_tot(s.sseguro, NULL, 1108, mg.nmovimi,  2 , 'POL', 'ICAPASE'), 
+                         'FM999G999G999G990D00') 
+               + TO_NUMBER(pac_isqlfor.f_cap_tot(s.sseguro, NULL, 1109, mg.nmovimi,  2 , 'POL', 'ICAPASE'), 
+                           'FM999G999G999G990D00') 
+               + TO_NUMBER(pac_isqlfor.f_cap_tot(s.sseguro, NULL, 1110, mg.nmovimi,  2 , 'POL', 'ICAPASE'), 
+                           'FM999G999G999G990D00'), 
+               'FM999G999G999G990D00') "SVALMAQAUT", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1107, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                        2 ) 
+           + pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1639, 1095,  &                           1107, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1107", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1108, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1108, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1108", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1109, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1109, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1109", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1110, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1110, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1110", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1109, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1110, 1, mg.nmovimi, 'POL') = 1 THEN TO_CHAR 
+                                                                                                                 (TO_NUMBER 
+                                                                                                                     (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1109, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                      'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1110, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00'), 
+                                                                                                                  'FM999G999G999G990D00') 
+          ELSE 'No incluida' 
+       END "SVALREP", 
+       pac_isqlfor.f_get_desglose_garant(s.sseguro, NULL, 1107, mg.nmovimi) "DLGARANT_1107", 
+       pac_isqlfor.f_get_desglose_garant(s.sseguro, NULL, 1108, mg.nmovimi) "DLGARANT_1108", 
+       pac_isqlfor.f_get_desglose_garant(s.sseguro, NULL, 1109, mg.nmovimi) "DLGARANT_1109", 
+       pac_isqlfor.f_get_desglose_garant(s.sseguro, NULL, 1110, mg.nmovimi) "DLGARANT_1110", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1097, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1097, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1114, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1114, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1097_1114", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1098, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1098, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1118, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1118, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1098_1118", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1115, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1115, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1099, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1099, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1115_1099", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1755,  2 ) "CPREGUN_1755", 
+       pac_isqlfor.f_get_respuesta_pol(s.sseguro, mp1.nmovimi, 1756,  2 ) "CPREGUN_1756", 
+       pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1618, 1044,  2 ) "CPREGUN_1618", 
+       pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1619, 1044,  2 ) "CPREGUN_1619", 
+       NVL(TO_CHAR(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1635, 1085,  2 ), 
+                   'FM999G999G999G990D00'), 
+           'No incluida') "CPREGUN_1635", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1085, 1, mg.nmovimi, 'POL') = 1 THEN CASE 
+                                                                                                                  WHEN INSTR 
+                                                                                                                         (pac_isqlfor.f_get_respuesta_garan 
+                                                                                                                             (s.sseguro, 
+                                                                                                                              mp3.nmovimi, 
+                                                                                                                              1634, 
+                                                                                                                              1085, 
+                                                                                                                               2 ), 
+                                                                                                                          '%') = 
+                                                                                                                           0 THEN NULL 
+                                                                                                                  ELSE pac_isqlfor.f_get_respuesta_garan 
+                                                                                                                         (s.sseguro, 
+                                                                                                                          mp3.nmovimi, 
+                                                                                                                          1634, 
+                                                                                                                          1085, 
+                                                                                                                           2 ) 
+                                                                                                               END 
+          ELSE NULL 
+       END "CPREGUN_1634", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1085, 1, mg.nmovimi, 'POL') = 1 THEN CASE 
+                                                                                                                  WHEN INSTR 
+                                                                                                                         (pac_isqlfor.f_get_respuesta_garan 
+                                                                                                                             (s.sseguro, 
+                                                                                                                              mp3.nmovimi, 
+                                                                                                                              1634, 
+                                                                                                                              1085, 
+                                                                                                                               2 ), 
+                                                                                                                          '%') = 
+                                                                                                                           0 THEN NULL 
+                                                                                                                  ELSE TO_CHAR 
+                                                                                                                         (TO_NUMBER 
+                                                                                                                             (pac_isqlfor.f_cap_tot 
+                                                                                                                                 (s.sseguro, 
+                                                                                                                                  NULL, 
+                                                                                                                                  1085, 
+                                                                                                                                  mg.nmovimi, 
+                                                                                                                                   2 , 
+                                                                                                                                  'POL', 
+                                                                                                                                  'ICAPASE'), 
+                                                                                                                              'FM999G999G999G990D00') 
+                                                                                                                          * 100 
+                                                                                                                          / SUBSTR 
+                                                                                                                              (pac_isqlfor.f_get_respuesta_garan 
+                                                                                                                                  (s.sseguro, 
+                                                                                                                                   mp3.nmovimi, 
+                                                                                                                                   1634, 
+                                                                                                                                   1085, 
+                                                                                                                                    2 ), 
+                                                                                                                               1, 
+                                                                                                                               2), 
+                                                                                                                          'FM999G999G999G990D00') 
+                                                                                                               END 
+          ELSE NULL 
+       END "CGARANT_1085", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1085, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1085, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1086, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1086, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CPREGUN_1635_1634", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1086, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1086, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1086", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1087, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1087, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1087", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1088, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1088, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1088", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1089, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1089, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1089", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1090, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1090, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1090", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1085, 1, mg.nmovimi, 'POL') = 1 THEN CASE 
+                                                                                                                  WHEN INSTR 
+                                                                                                                         (pac_isqlfor.f_get_respuesta_garan 
+                                                                                                                             (s.sseguro, 
+                                                                                                                              mp3.nmovimi, 
+                                                                                                                              1634, 
+                                                                                                                              1085, 
+                                                                                                                               2 ), 
+                                                                                                                          '%') = 
+                                                                                                                         0 THEN 'Valor total' 
+                                                                                                                  ELSE 'Valor parcial' 
+                                                                                                               END 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1086, 1, mg.nmovimi, 'POL') = 1 THEN 'Primer riesgo' 
+          ELSE NULL 
+       END "TIPO_CAPITAL_1085_1086", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1082, 1, mg.nmovimi, 'POL') = 1 THEN 'Valor Total' 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1092, 1, mg.nmovimi, 'POL') = 1 THEN 'Primer riesgo' 
+          ELSE NULL 
+       END "TIPO_CAPITAL_1082_1092", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1097, 1, mg.nmovimi, 'POL') = 1 THEN 'Valor Total' 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1114, 1, mg.nmovimi, 'POL') = 1 THEN 'Primer riesgo' 
+          ELSE NULL 
+       END "TIPO_CAPITAL_1097_1114", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1098, 1, mg.nmovimi, 'POL') = 1 THEN 'Valor Total' 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1118, 1, mg.nmovimi, 'POL') = 1 THEN 'Primer riesgo' 
+          ELSE NULL 
+       END "TIPO_CAPITAL_1098_1118", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1115, 1, mg.nmovimi, 'POL') = 1 THEN 'Valor Total' 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1099, 1, mg.nmovimi, 'POL') = 1 THEN 'Primer riesgo' 
+          ELSE NULL 
+       END "TIPO_CAPITAL_1115_1099", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1049, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1050, 1, mg.nmovimi, 'POL') = 1 THEN 'Valor Total' 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1093, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1094, 1, mg.nmovimi, 'POL') = 1 THEN 'Primer riesgo' 
+          ELSE NULL 
+       END "TC_1049_1050_1093_1094", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1095, 1, mg.nmovimi, 'POL') = 1 THEN 'Valor Total/parcial' 
+          ELSE NULL 
+       END "TIPO_CAPITAL_1095", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1044, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1044, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1044", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1031, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1031, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1031", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1032, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1032, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1032", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1091, 1, mg.nmovimi, 'POL') = 1 THEN 'Seg??n anexo Condiciones Particulares' 
+          ELSE 'No incluida' 
+       END "CGARANT_1091", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1082, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1082, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1092, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1092, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1082_1092", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1082, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_get_desglose_garant 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1082, 
+                                                                                                                   mg.nmovimi) 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1092, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_get_respuesta_garan 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   mp3.nmovimi, 
+                                                                                                                   1794, 
+                                                                                                                   1092, 
+                                                                                                                    2 ) 
+          ELSE NULL 
+       END "DLGARANT_1082_1092", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1093, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1094, 1, mg.nmovimi, 'POL') = 1 THEN TO_CHAR 
+                                                                                                                 (TO_NUMBER 
+                                                                                                                     (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1093, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                      'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1094, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00'), 
+                                                                                                                  'FM999G999G999G990D00') 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1049, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1050, 1, mg.nmovimi, 'POL') = 1 THEN TO_CHAR 
+                                                                                                                 (TO_NUMBER 
+                                                                                                                     (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1049, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                      'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1050, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00'), 
+                                                                                                                  'FM999G999G999G990D00') 
+          ELSE 'No incluida' 
+       END "SVALMAQ", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1049, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1049, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1094, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1094, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1049_1094", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1050, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1050, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1093, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1093, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1050_1093", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1049, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_get_desglose_garant 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1049, 
+                                                                                                                   mg.nmovimi) 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1094, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_get_respuesta_garan 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   mp3.nmovimi, 
+                                                                                                                   1794, 
+                                                                                                                   1094, 
+                                                                                                                    2 ) 
+          ELSE NULL 
+       END "DLGARANT_1049_1094", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1050, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_get_desglose_garant 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1050, 
+                                                                                                                   mg.nmovimi) 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1093, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_get_respuesta_garan 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   mp3.nmovimi, 
+                                                                                                                   1794, 
+                                                                                                                   1093, 
+                                                                                                                    2 ) 
+          ELSE NULL 
+       END "DLGARANT_1050_1093", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1051, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1051, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1051", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1051, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_get_desglose_garant 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1051, 
+                                                                                                                   mg.nmovimi) 
+          ELSE NULL 
+       END "DLGARANT_1051", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1052, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1052, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1052", 
+       TO_CHAR(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1623, 1052,  2 ), '0'), 
+               'FM999G999G999G990D00') "CPREGUN_1623", 
+       TO_CHAR(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1624, 1052,  2 ), '0'), 
+               'FM999G999G999G990D00') "CPREGUN_1624", 
+       TO_CHAR(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1625, 1052,  2 ), '0'), 
+               'FM999G999G999G990D00') "CPREGUN_1625", 
+       TO_CHAR(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1626, 1052,  2 ), '0'), 
+               'FM999G999G999G990D00') "CPREGUN_1626", 
+       TO_CHAR(TO_NUMBER(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1623, 1052,  2 ), '0')) 
+               + TO_NUMBER(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1624, 1052,  2 ), '0')) 
+               + TO_NUMBER(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1625, 1052,  2 ), '0')) 
+               + TO_NUMBER(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1626, 1052,  2 ), '0')), 
+               'FM999G999G999G990D00') "SUMA_CPREGUN_LIQ", 
+       NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1627, 1053,  2 ), 0) "CPREGUN_1627", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1053, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1053, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1053", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1114, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1114, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1114", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1115, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1115, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1115", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1063, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1063, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1063", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1063, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_get_respuesta_garan 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   mp3.nmovimi, 
+                                                                                                                   1794, 
+                                                                                                                   1063, 
+                                                                                                                    2 ) 
+          ELSE NULL 
+       END "D_INVERNADERO", 
+       NVL(pac_isqlfor.f_get_respuestas_gar(s.sseguro, mp3.nmovimi, 1063, 1629, 1631, 1632, 1633, NULL,  2 , 1), 
+           'No Incluida') "CPREGUN_1629", 
+       NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1630, 1063,  2 ), 'No Incluida') "CPREGUN_1630", 
+       NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1631, 1063,  2 ), 'No Incluida') "CPREGUN_1631", 
+       NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1632, 1063,  2 ), 'No Incluida') "CPREGUN_1632", 
+       NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1633, 1063,  2 ), 'No Incluida') "CPREGUN_1633", 
+       NVL(pac_isqlfor.f_get_param_clau(s.sseguro, mc.nmovimi, 0, 90, 1), 'No Incluida') "D_INVERNADERO", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1629, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1629, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1629", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1630, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1630, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1630", 
+       pac_isqlfor.f_cap_tot(s.sseguro, NULL, NULL, mg.nmovimi,  2 , 'POL', 'IPRINET') "IPRINET", 
+       TO_CHAR(TO_NUMBER(pac_isqlfor.f_cap_tot(s.sseguro, NULL, NULL, mg.nmovimi,  2 , 'POL', 'IPRINET'), 
+                         'FM999G999G999G990D00') 
+               + pac_tarifas.f_importes_anuales(s.sseguro, 'IPS', 'POL') 
+               + pac_tarifas.f_importes_anuales(s.sseguro, 'CLEA', 'POL'), 
+               'FM999G999G999G990D00') "IPRITOT", 
+       TO_CHAR(pac_tarifas.f_importes_anuales(s.sseguro, 'IPS', 'POL') 
+               + pac_tarifas.f_importes_anuales(s.sseguro, 'CLEA', 'POL'), 
+               'FM999G999G999G990D00') "IIMPRECTOT", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1102, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1103, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1104, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1105, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1107, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1108, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1109, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1110, 1, mg.nmovimi, 'POL') = 1 
+           OR pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1019, 1, mg.nmovimi, 'POL') = 1 THEN TO_CHAR 
+                                                                                                                 (TO_NUMBER 
+                                                                                                                     (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1102, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                      'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1103, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1104, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1019, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1105, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1107, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1108, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1109, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00') 
+                                                                                                                  + TO_NUMBER 
+                                                                                                                      (pac_isqlfor.f_cap_tot 
+                                                                                                                               (s.sseguro, 
+                                                                                                                                NULL, 1110, 
+                                                                                                                                mg.nmovimi, 
+                                                                                                                                 2 , 
+                                                                                                                                'POL', 
+                                                                                                                                'ICAPASE'), 
+                                                                                                                       'FM999G999G999G990D00'), 
+                                                                                                                  'FM999G999G999G990D00') 
+          ELSE 'No incluida' 
+       END "SVALCONTE", 
+       clinv.tparame "CLAINV", 
+       TO_CHAR(NVL(pac_isqlfor.f_import_garantia(1101, s.sseguro), 0) 
+               + NVL(pac_isqlfor.f_import_garantia(1102, s.sseguro), 0) 
+               + NVL(pac_isqlfor.f_import_garantia(1103, s.sseguro), 0) 
+               + NVL(pac_isqlfor.f_import_garantia(1104, s.sseguro), 0) 
+               + NVL(pac_isqlfor.f_import_garantia(1105, s.sseguro), 0) 
+               + NVL(pac_isqlfor.f_import_garantia(1107, s.sseguro), 0) 
+               + NVL(pac_isqlfor.f_import_garantia(1108, s.sseguro), 0) 
+               + NVL(pac_isqlfor.f_import_garantia(1109, s.sseguro), 0) 
+               + NVL(pac_isqlfor.f_import_garantia(1110, s.sseguro), 0) 
+               + NVL(pac_isqlfor.f_import_garantia(1019, s.sseguro), 0), 
+               'FM999G999G999G990D00') "IMPORT_BASICAS", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1049, s.sseguro) + pac_isqlfor.f_import_garantia(1050, s.sseguro), 
+               'FM999G999G999G990D00') "PRIMA_MAQ", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1051, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1051", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1052, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1052", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1044, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1044", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1082, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1082", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1091, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1091", 
+       TO_CHAR(NVL(pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1628, 1053,  2 ), 0), 
+               'FM999G999G999G990D00') "CPREGUN_1628", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1053, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1053", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1114, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1114", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1115, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1115", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1063, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1063", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1031, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1031", 
+       NVL((SELECT TO_CHAR(DECODE(r.ctiprec, 9, vr.iprinet *(-1), vr.iprinet) 
+                           + DECODE(r.ctiprec, 9, vr.irecfra *(-1), vr.irecfra), 
+                           'FM999G999G999G990D00') 
+              FROM recibos r, vdetrecibos vr 
+             WHERE r.sseguro = s.sseguro 
+               AND r.nmovimi = m.nmovimi 
+               AND vr.nrecibo = r.nrecibo and not exists(select 1 from recibosclon where nreciboact=r.nrecibo and corigen=0)), 
+           0) "IPRIINI", 
+       NVL((SELECT TO_CHAR(DECODE(r.ctiprec, 9, vr.iips *(-1), vr.iips), 'FM999G999G999G990D00') 
+              FROM recibos r, vdetrecibos vr 
+             WHERE r.sseguro = s.sseguro 
+               AND r.nmovimi = m.nmovimi 
+               AND vr.nrecibo = r.nrecibo and not exists(select 1 from recibosclon where nreciboact=r.nrecibo and corigen=0)), 0) "IIPSINI", 
+       NVL((SELECT TO_CHAR(DECODE(r.ctiprec, 9, vr.idgs *(-1), vr.idgs) + DECODE(r.ctiprec, 9, vr.iconsor *(-1), vr.iconsor), 
+                           'FM999G999G999G990D00') 
+              FROM recibos r, vdetrecibos vr 
+             WHERE r.sseguro = s.sseguro 
+               AND r.nmovimi = m.nmovimi 
+               AND vr.nrecibo = r.nrecibo and not exists(select 1 from recibosclon where nreciboact=r.nrecibo and corigen=0)), 
+           0) "ICLEAINI", 
+       NVL((SELECT TO_CHAR(DECODE(r.ctiprec, 9, vr.itotalr *(-1), vr.itotalr), 'FM999G999G999G990D00') 
+              FROM recibos r, vdetrecibos vr 
+             WHERE r.sseguro = s.sseguro 
+               AND r.nmovimi = m.nmovimi 
+               AND vr.nrecibo = r.nrecibo and not exists(select 1 from recibosclon where nreciboact=r.nrecibo and corigen=0)), 0) "ITOTINI", 
+       TO_CHAR(pac_tarifas.f_importes_anuales(s.sseguro, 'PR_ANUAL_NETA', 'POL') 
+               + pac_tarifas.f_importes_anuales(s.sseguro, 'FRACC', 'POL'), 
+               'FM999G999G999G990D00') "IPRIANU", 
+       TO_CHAR(pac_tarifas.f_importes_anuales(s.sseguro, 'IPS', 'POL'), 'FM999G999G999G990D00') "IIPSANU", 
+       TO_CHAR(pac_tarifas.f_importes_anuales(s.sseguro, 'CLEA', 'POL') 
+               + pac_tarifas.f_importes_anuales(s.sseguro, 'CONSOR', 'POL'), 
+               'FM999G999G999G990D00') "ICLEAANU", 
+       TO_CHAR(pac_tarifas.f_importes_anuales(s.sseguro, 'PR_ANUAL', 'POL') 
+               + pac_tarifas.f_importes_anuales(s.sseguro, 'FRACC', 'POL'), 
+               'FM999G999G999G990D00') "ITOTANU", 
+       pac_isqlfor.f_get_cod_condparticular(s.sseguro, m.nmovimi, 9060) "VERSION", 
+       CASE 
+          WHEN pac_isqlfor.f_clausula_particular(s.sseguro, 0) IS NULL THEN NULL 
+          ELSE LOWER('\par ') || INITCAP('clÃ¡usulas especiales') 
+       END "TITULOCLAUESP", 
+       CASE 
+          WHEN pac_isqlfor.f_clausula_particular(s.sseguro, 0) IS NULL THEN NULL 
+          ELSE pac_isqlfor.f_clausula_particular(s.sseguro, 0) || LOWER('\par ') 
+       END "CLAUSUESP", 
+       pac_isqlfor_agm.f_get_indice_base( &pmt_sseguro ) "INDICEBASE", 'Madrid' "LOCALI", 
+       pac_isqlfor.fechahoy_idioma(f_sysdate,  2 ) "FESPED", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1120, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1120, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1120", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1120, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1121, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'No incluida' 
+       END "CGARANT_1121", 
+       pac_isqlfor.f_resp_rie(s.sseguro, 1795, 1, mp2.nmovimi,  2 , 'POL') "CPREGUN_1795", 
+       pac_isqlfor.f_resp_rie(s.sseguro, 1796, 1, mp2.nmovimi,  2 , 'POL') "CPREGUN_1796", 
+       pac_isqlfor.f_respuesta(s.sseguro, mp3.nmovimi, 9821,  2 ) "CPREGUN_9821", 
+       pac_isqlfor.f_get_respuesta_tabcol(s.sseguro, 1, mp3.nmovimi, 9822,  2 ) "CPREGUN_9822", 
+       pac_isqlfor.f_resp_rie(s.sseguro, 9832, 1, mp2.nmovimi,  2 , 'POL') "CPREGUN_9832", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1201, 1, mg.nmovimi, 'POL') = 1 THEN  
+          pac_isqlfor.f_respuesta(s.sseguro, mp2.nmovimi, 7517,  2 )  
+       ELSE '' 
+       END "CPREGUN_7517_GARAN", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1200, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1200, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'NOÂ INCLUIDA' 
+       END "CGARANT_1200", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1200, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1200", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1047, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1047, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'NOÂ INCLUIDA' 
+       END "CGARANT_1047", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1047, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1047", 
+       pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1620, 1047,  2 ) "CPREGUN_1620", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1048, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1048, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'NOÂ INCLUIDA' 
+       END "CGARANT_1048", 
+       TO_CHAR(pac_isqlfor.f_import_garantia(1048, s.sseguro), 'FM999G999G999G990D00') "PRIMA_1048", 
+       pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1621, 1048,  2 ) "CPREGUN_1621", 
+       pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 1622, 1048,  2 ) "CPREGUN_1622", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1030, 1, mg.nmovimi, 'POL') = 1 THEN 'INCLUIDA' 
+          ELSE 'NO INCLUIDA' 
+       END "CGARANT_1030", 
+       CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1201, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                  (s.sseguro, 
+                                                                                                                   NULL, 
+                                                                                                                   1201, 
+                                                                                                                   mg.nmovimi, 
+                                                                                                                    2 , 
+                                                                                                                   'POL', 
+                                                                                                                   'ICAPASE') 
+          ELSE 'NO INCLUIDA' 
+       END "CGARANT_1201", 
+CASE 
+          WHEN pac_propio_garanproval_agm.f_garantia_contratada(s.sseguro, 1070, 1, mg.nmovimi, 'POL') = 1 THEN pac_isqlfor.f_cap_tot 
+                                                                                                                 (s.sseguro, 
+                                                                                                                  NULL, 
+                                                                                                                  1070, 
+                                                                                                                  mg.nmovimi, 
+                                                                                                                   2 , 
+                                                                                                                  'POL', 
+                                                                                                                 'ICAPASE') 
+          ELSE 'NO INCLUIDA' 
+       END "CGARANT_1070", 
+       (SELECT r.tnatrie 
+          FROM riesgos r, seguros ss 
+         WHERE r.sseguro = ss.sseguro 
+           AND ss.npoliza = s.npoliza 
+           AND ss.ncertif = 0 
+           AND r.nriesgo = pac_isqlfor.f_respuesta_pol(s.sseguro, mp1.nmovimi, 4089,  2 )) "CPREGUN_4089", 
+       pac_isqlfor.f_get_riesgos(s.sseguro) "PLAN_DESC" 
+, 
+ pac_isqlfor.f_get_respuesta_garan(s.sseguro, mp3.nmovimi, 9819, 1201,  2 ) "CPREGUN_9819" 
+, 
+pac_isqlfor.f_resp_rie(s.sseguro, 9833, 1, mp2.nmovimi,  2 , 'POL') "CPREGUN_9833", (SELECT MAX(CMANDATO) FROM MANDATOS WHERE SSEGURO = S.SSEGURO) "CMANDATO" 
+  FROM per_direcciones pd, per_personas p, asegurados a, seguros s, tomadores t, per_personas pt, per_direcciones pdt, movseguro m, 
+       movseguro mg, movseguro mp1, movseguro mp2, movseguro mp3, movseguro mc, clauparaseg clinv, 
+       (SELECT sperson, cdomici 
+          FROM tomadores t, seguros seg 
+         WHERE seg.npoliza = (SELECT npoliza 
+                                FROM seguros 
+                               WHERE sseguro = &pmt_sseguro ) 
+           AND seg.ncertif = 0 
+           AND seg.sseguro = t.sseguro) tom0 
+ WHERE s.sseguro =  &pmt_sseguro  
+   AND a.sseguro = s.sseguro 
+   AND a.norden = (SELECT MIN(a1.norden) 
+                     FROM asegurados a1 
+                    WHERE a1.sseguro = s.sseguro) 
+   AND p.sperson = a.sperson 
+   AND pd.sperson(+) = a.sperson 
+   AND(pd.cdomici = NVL(a.cdomici, (SELECT MIN(cdomici) 
+                                      FROM per_direcciones 
+                                     WHERE sperson = a.sperson)) 
+       OR NOT EXISTS(SELECT 1 
+                       FROM per_direcciones 
+                      WHERE sperson = a.sperson)) 
+   AND t.sseguro = s.sseguro 
+   AND t.nordtom = (SELECT MIN(t1.nordtom) 
+                      FROM tomadores t1 
+                     WHERE t1.sseguro = s.sseguro) 
+   AND pt.sperson = t.sperson 
+   AND pdt.sperson(+) = t.sperson 
+   AND(pdt.cdomici = NVL(t.cdomici, (SELECT MIN(cdomici) 
+                                       FROM per_direcciones 
+                                      WHERE sperson = t.sperson)) 
+       OR NOT EXISTS(SELECT 1 
+                       FROM per_direcciones 
+                      WHERE sperson = t.sperson)) 
+   AND m.sseguro = s.sseguro 
+   AND m.nmovimi = (SELECT MAX(m1.nmovimi) 
+                      FROM movseguro m1 
+                     WHERE m1.sseguro = m.sseguro) 
+   AND clinv.sclagen(+) = 90 
+   AND clinv.sseguro(+) = m.sseguro 
+   AND clinv.nriesgo(+) = 0 
+   AND clinv.nmovimi(+) = m.nmovimi 
+   AND clinv.nparame(+) = 1 
+   AND mg.sseguro = s.sseguro 
+   AND mg.nmovimi IN(SELECT MAX(g1.nmovimi) 
+                       FROM garanseg g1 
+                      WHERE g1.sseguro = mg.sseguro) 
+   AND mp1.sseguro = s.sseguro 
+   AND mp1.nmovimi IN(SELECT MAX(p1.nmovimi) 
+                        FROM pregunpolseg p1 
+                       WHERE p1.sseguro = mp1.sseguro) 
+   AND mp2.sseguro = s.sseguro 
+   AND mp2.nmovimi IN(SELECT MAX(p2.nmovimi) 
+                        FROM pregunseg p2 
+                       WHERE p2.sseguro = mp2.sseguro) 
+   AND mp3.sseguro(+) = s.sseguro 
+   AND(mp3.nmovimi IN(SELECT MAX(p3.nmovimi) 
+                        FROM pregungaranseg p3 
+                       WHERE p3.sseguro = mp3.sseguro) 
+       OR (NOT EXISTS(SELECT 1 
+                       FROM pregungaranseg p3 
+                      WHERE p3.sseguro = s.sseguro) and mp3.nmovimi = m.nmovimi)) 
+   AND mc.sseguro(+) = s.sseguro 
+   AND(mc.nmovimi IN(SELECT MAX(c1.nmovimi) 
+                       FROM pregungaranseg c1 
+                      WHERE c1.sseguro = mc.sseguro) 
+       OR (NOT EXISTS(SELECT 1 
+                       FROM pregungaranseg c1 
+                      WHERE c1.sseguro = s.sseguro) and mc.nmovimi = m.nmovimi))
